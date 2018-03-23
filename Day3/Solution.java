@@ -10,13 +10,13 @@ public class Solution {
         int count = 0;
         int pos = -1;
         for (int i = 0; ((i < 8) && (pos == -1)); i++){
-            if ((board[1][i] == 'P') && (board[0][i] == '#')){
+            if (validMove(board, i)){
                 pos = i;
             }
         }
 
-            board[1][pos] = '#';
-            board[0][pos] = 'P';
+            //board[1][pos] = '#';
+            //board[0][pos] = 'P';
 
             if (queenCap(board, pos))count++;
             if (rookCap(board, pos))count++;
@@ -25,6 +25,42 @@ public class Solution {
 
             return count;
         }
+
+    static boolean validMove(char[][] board, int i){
+
+        // If the space in front of the pawn isn't empty, the
+        // pawn can't move there
+        if (!((board[1][i] == 'P') && (board[0][i] == '#'))){
+            return false;
+        }
+
+        //char[][] tempBoard = board.copy;
+
+        boolean valid = true;
+
+        board[0][i] = 'P';
+        board[1][i] = '#';
+
+        for (int x = 0; ((x < 8) && (valid)); x++){
+            for (int y = 0; ((y < 8) && (valid)); y++){
+                switch(board[x][y]){
+                    case 'q': valid = straightCap(board, x, y) && diagCap(board, x, y);
+                    case 'n': valid = knightCap(board, x, y);
+                    case 'b': valid = diagCap(board, x, y);
+                    case 'r': valid = straightCap(board, x, y);
+                }
+            }
+        }
+
+        if (!valid){
+            board[0][i] = '#';
+            board[1][i] = 'P';
+        }
+
+        return valid;
+
+
+    }
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
@@ -110,4 +146,97 @@ public class Solution {
 
     	return false;
     }
+
+    static boolean diagCap(char[][] board, int x, int y){
+        //Down-Right
+
+        for (int offset = 1; (((x + offset) < 8) && ((y + offset) < 8) ); offset++){
+            if (board[x + offset][y + offset] == 'K') return false;
+            if (board[x + offset][y + offset] != '#') break;
+        }
+
+        //Down-Left
+
+        for (int offset = 1; (((x + offset) < 8) && ((y - offset) >= 0) ); offset++){
+            if (board[x + offset][y - offset] == 'K') return false;
+            if (board[x + offset][y - offset] != '#') break;
+        }
+
+        //Up-Right
+
+        for (int offset = 1; (((x - offset) >= 0) && ((y + offset) < 8) ); offset++){
+            if (board[x + offset][y - offset] == 'K') return false;
+            if (board[x + offset][y - offset] != '#') break;
+        }
+
+        //Up-Left
+
+        for (int offset = 1; (((x - offset) >= 0) && ((y - offset) >= 0) ); offset++){
+            if (board[x + offset][y - offset] == 'K') return false;
+            if (board[x + offset][y - offset] != '#') break;
+        }
+
+        return true;
+
+    }
+
+    static boolean straightCap(char[][] board, int x, int y){
+
+        //Down
+        for (int i = 1; (x + i) < 8; i++){
+            if (board[x + i][y] == 'K') return false;
+            if (board[x + i][y] != '#') break;
+        }
+
+        //Right
+        for (int i = 1; (y + i) < 8; i++){
+            if (board[x][y + i] == 'K') return false;
+            if (board[x][y + i] != '#') break;
+        }
+
+        //Left
+        for (int i = 1; (y - i) >= 0; i++){
+            if (board[x][y - i] == 'K') return false;
+            if (board[x][y - i] != '#') break;
+        }
+
+        //Up
+        for (int i = 1; (x - i) >= 0; i++){
+            if (board[x - i][y] == 'K') return false;
+            if (board[x - i][y] != '#') break;
+        }
+
+        return true;
+    }
+
+    static boolean knightCap(char[][] board, int x, int y){
+
+        if ((y - 2) >= 0){
+            if ((x != 7) && (board[x + 1][y - 2] == 'K')) return false;
+
+            if ((x != 0) && (board[x - 1][y - 2] == 'K')) return false;
+        }
+
+        if ((y - 1) >= 0){
+            if ((x < 6) && (board[x + 2][y - 1] == 'K')) return false;
+
+            if ((x > 1) && (board[x - 2][y - 1] == 'K')) return false;
+        }
+
+        if ((y + 1) < 8){
+            if ((x < 6) && (board[x + 2][y + 1] == 'K')) return false;
+
+            if ((x > 1) && (board[x - 2][y + 1] == 'K')) return false;
+        }
+
+        if ((y + 2) < 8){
+            if ((x != 7) && (board[x + 1][y + 2] == 'K')) return false;
+
+            if ((x != 0) && (board[x - 1][y + 2] == 'K')) return false;
+        }
+
+        return true;
+    }
+
+
 }
