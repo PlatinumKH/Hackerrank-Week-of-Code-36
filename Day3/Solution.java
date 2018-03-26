@@ -170,8 +170,8 @@ public class Solution {
         //Up-Right
 
         for (int offset = 1; (((x - offset) >= 0) && ((y + offset) < 8) ); offset++){
-            if (board[x + offset][y - offset] == king) return true;
-            if (board[x + offset][y - offset] != '#') break;
+            if (board[x + offset][y + offset] == king) return true;
+            if (board[x + offset][y + offset] != '#') break;
         }
 
         //Up-Left
