@@ -7,7 +7,6 @@ import java.util.regex.*;
 public class Solution {
 
     static int waysToGiveACheck(char[][] board) {
-        int count = 0;
         int pos = -1;
         for (int i = 0; ((i < 8) && (pos == -1)); i++){
             if (validMove(board, i)){
@@ -18,6 +17,11 @@ public class Solution {
             //board[1][pos] = '#';
             //board[0][pos] = 'P';
 
+        if (allyPiecesCap(board, pos)){
+            return 4;
+        } else {
+            int count = 0;
+
             if (queenCap(board, pos))count++;
             if (rookCap(board, pos))count++;
             if (bishopCap(board, pos))count++;
@@ -25,6 +29,7 @@ public class Solution {
 
             return count;
         }
+    }
 
     static boolean validMove(char[][] board, int i){
 
@@ -34,30 +39,30 @@ public class Solution {
             return false;
         }
 
-        //char[][] tempBoard = board.copy;
-
-        boolean valid = true;
+        boolean cap = false;
 
         board[0][i] = 'P';
         board[1][i] = '#';
 
-        for (int x = 0; ((x < 8) && (valid)); x++){
-            for (int y = 0; ((y < 8) && (valid)); y++){
+        for (int x = 0; ((x < 8) && (!cap)); x++){
+            for (int y = 0; ((y < 8) && (!cap)); y++){
                 switch(board[x][y]){
-                    case 'q': valid = straightCap(board, x, y) && diagCap(board, x, y);
-                    case 'n': valid = knightCap(board, x, y);
-                    case 'b': valid = diagCap(board, x, y);
-                    case 'r': valid = straightCap(board, x, y);
+                    case 'q': cap = straightCap(board, x, y, 'K') || diagCap(board, x, y, 'K');
+                    case 'n': cap = knightCap(board, x, y, 'K');
+                    case 'b': cap = diagCap(board, x, y, 'K');
+                    case 'r': cap = straightCap(board, x, y, 'K');
                 }
             }
         }
 
-        if (!valid){
+        if (cap){
             board[0][i] = '#';
             board[1][i] = 'P';
         }
 
-        return valid;
+        // If our king can be captured, we want to return a false value to
+        // indicate this is not a valid move
+        return !cap;
 
 
     }
@@ -147,95 +152,120 @@ public class Solution {
     	return false;
     }
 
-    static boolean diagCap(char[][] board, int x, int y){
+    static boolean diagCap(char[][] board, int x, int y, char king){
         //Down-Right
 
         for (int offset = 1; (((x + offset) < 8) && ((y + offset) < 8) ); offset++){
-            if (board[x + offset][y + offset] == 'K') return false;
+            if (board[x + offset][y + offset] == king) return true;
             if (board[x + offset][y + offset] != '#') break;
         }
 
         //Down-Left
 
         for (int offset = 1; (((x + offset) < 8) && ((y - offset) >= 0) ); offset++){
-            if (board[x + offset][y - offset] == 'K') return false;
+            if (board[x + offset][y - offset] == king) return true;
             if (board[x + offset][y - offset] != '#') break;
         }
 
         //Up-Right
 
         for (int offset = 1; (((x - offset) >= 0) && ((y + offset) < 8) ); offset++){
-            if (board[x + offset][y - offset] == 'K') return false;
+            if (board[x + offset][y - offset] == king) return true;
             if (board[x + offset][y - offset] != '#') break;
         }
 
         //Up-Left
 
         for (int offset = 1; (((x - offset) >= 0) && ((y - offset) >= 0) ); offset++){
-            if (board[x + offset][y - offset] == 'K') return false;
+            if (board[x + offset][y - offset] == king) return true;
             if (board[x + offset][y - offset] != '#') break;
         }
 
-        return true;
+        return false;
 
     }
 
-    static boolean straightCap(char[][] board, int x, int y){
+    static boolean straightCap(char[][] board, int x, int y, char king){
 
         //Down
         for (int i = 1; (x + i) < 8; i++){
-            if (board[x + i][y] == 'K') return false;
+            if (board[x + i][y] == king) return true;
             if (board[x + i][y] != '#') break;
         }
 
         //Right
         for (int i = 1; (y + i) < 8; i++){
-            if (board[x][y + i] == 'K') return false;
+            if (board[x][y + i] == king) return true;
             if (board[x][y + i] != '#') break;
         }
 
         //Left
         for (int i = 1; (y - i) >= 0; i++){
-            if (board[x][y - i] == 'K') return false;
+            if (board[x][y - i] == king) return true;
             if (board[x][y - i] != '#') break;
         }
 
         //Up
         for (int i = 1; (x - i) >= 0; i++){
-            if (board[x - i][y] == 'K') return false;
+            if (board[x - i][y] == king) return true;
             if (board[x - i][y] != '#') break;
         }
 
-        return true;
+        return false;
     }
 
-    static boolean knightCap(char[][] board, int x, int y){
+    static boolean knightCap(char[][] board, int x, int y, char king){
 
         if ((y - 2) >= 0){
-            if ((x != 7) && (board[x + 1][y - 2] == 'K')) return false;
+            if ((x != 7) && (board[x + 1][y - 2] == king)) return true;
 
-            if ((x != 0) && (board[x - 1][y - 2] == 'K')) return false;
+            if ((x != 0) && (board[x - 1][y - 2] == king)) return true;
         }
 
         if ((y - 1) >= 0){
-            if ((x < 6) && (board[x + 2][y - 1] == 'K')) return false;
+            if ((x < 6) && (board[x + 2][y - 1] == king)) return true;
 
-            if ((x > 1) && (board[x - 2][y - 1] == 'K')) return false;
+            if ((x > 1) && (board[x - 2][y - 1] == king)) return true;
         }
 
         if ((y + 1) < 8){
-            if ((x < 6) && (board[x + 2][y + 1] == 'K')) return false;
+            if ((x < 6) && (board[x + 2][y + 1] == king)) return true;
 
-            if ((x > 1) && (board[x - 2][y + 1] == 'K')) return false;
+            if ((x > 1) && (board[x - 2][y + 1] == king)) return true;
         }
 
         if ((y + 2) < 8){
-            if ((x != 7) && (board[x + 1][y + 2] == 'K')) return false;
+            if ((x != 7) && (board[x + 1][y + 2] == king)) return true;
 
-            if ((x != 0) && (board[x - 1][y + 2] == 'K')) return false;
+            if ((x != 0) && (board[x - 1][y + 2] == king)) return true;
         }
 
-        return true;
+        return false;
+    }
+
+    static boolean allyPiecesCap(char[][] board, int pos){
+
+        boolean cap = false;
+
+        board[0][pos] = 'P';
+        board[1][pos] = '#';
+
+        for (int x = 0; ((x < 8) && (!cap)); x++){
+            for (int y = 0; ((y < 8) && (!cap)); y++){
+                switch(board[x][y]){
+                    case 'Q': cap = straightCap(board, x, y, 'k') || diagCap(board, x, y, 'k');
+                    case 'N': cap = knightCap(board, x, y, 'k');
+                    case 'B': cap = diagCap(board, x, y, 'k');
+                    case 'R': cap = straightCap(board, x, y, 'k');
+                }
+            }
+        }
+
+        board[0][pos] = '#';
+        board[1][pos] = 'P';
+
+        return cap;
+
     }
 
 
