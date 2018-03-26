@@ -47,10 +47,10 @@ public class Solution {
         for (int x = 0; ((x < 8) && (!cap)); x++){
             for (int y = 0; ((y < 8) && (!cap)); y++){
                 switch(board[x][y]){
-                    case 'q': cap = straightCap(board, x, y, 'K') || diagCap(board, x, y, 'K');
-                    case 'n': cap = knightCap(board, x, y, 'K');
-                    case 'b': cap = diagCap(board, x, y, 'K');
-                    case 'r': cap = straightCap(board, x, y, 'K');
+                    case 'q': cap = straightCap(board, x, y, 'K') || diagCap(board, x, y, 'K'); break;
+                    case 'n': cap = knightCap(board, x, y, 'K'); break;
+                    case 'b': cap = diagCap(board, x, y, 'K'); break;
+                    case 'r': cap = straightCap(board, x, y, 'K'); break;
                 }
             }
         }
@@ -153,8 +153,8 @@ public class Solution {
     }
 
     static boolean diagCap(char[][] board, int x, int y, char king){
+        
         //Down-Right
-
         for (int offset = 1; (((x + offset) < 8) && ((y + offset) < 8) ); offset++){
             if (board[x + offset][y + offset] == king) return true;
             if (board[x + offset][y + offset] != '#') break;
@@ -250,19 +250,21 @@ public class Solution {
         board[0][pos] = 'P';
         board[1][pos] = '#';
 
-        for (int x = 0; ((x < 8) && (!cap)); x++){
-            for (int y = 0; ((y < 8) && (!cap)); y++){
+        for (int x = 0; ((x < 8) && (!(cap))); x++){
+            for (int y = 0; ((y < 8) && (!(cap))); y++){
                 switch(board[x][y]){
-                    case 'Q': cap = straightCap(board, x, y, 'k') || diagCap(board, x, y, 'k');
-                    case 'N': cap = knightCap(board, x, y, 'k');
-                    case 'B': cap = diagCap(board, x, y, 'k');
-                    case 'R': cap = straightCap(board, x, y, 'k');
+                    case 'Q': cap = (straightCap(board, x, y, 'k') || diagCap(board, x, y, 'k')); break;
+                    case 'N': cap = knightCap(board, x, y, 'k'); break;
+                    case 'B': cap = diagCap(board, x, y, 'k'); break;
+                    case 'R': cap = straightCap(board, x, y, 'k'); break;
                 }
             }
         }
 
         board[0][pos] = '#';
         board[1][pos] = 'P';
+
+        
 
         return cap;
 
