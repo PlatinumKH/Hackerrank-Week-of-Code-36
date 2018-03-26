@@ -14,9 +14,6 @@ public class Solution {
             }
         }
 
-            //board[1][pos] = '#';
-            //board[0][pos] = 'P';
-
         if (allyPiecesCap(board, pos)){
             return 4;
         } else {
